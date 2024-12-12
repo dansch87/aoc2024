@@ -6,7 +6,7 @@ namespace Day4Part1
         public static void Main(string[] args)
         {
             string filePath = "C:\\Users\\dansch\\Documents\\aoc2024\\day4\\input.txt";
-            
+
             // Translate characters to an integer representation and store it as a 2D list
             List<List<char>> charMatrix = new List<List<char>>();
             using (StreamReader reader = new StreamReader(filePath))
@@ -18,194 +18,81 @@ namespace Day4Part1
                     charMatrix.Add(record);
                 }
             }
-            
-            
-            int count = 0;
-            for (int i = 0; i < charMatrix.Count; i++)
-            {
-                var row = charMatrix[i];
-                for (int j = 0; j < row.Count; j++)
-                {
-                    if (charMatrix[i][j].Equals('X'))
-                    {
-                        
-                        if (IsHorizontal(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsHorizontalReverse(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsVertical(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsVerticalReverse(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsDiagonalDown(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsDiagonalDownReverse(charMatrix, i, j))
-                        {
-                            // TODO: is 3 but should be 4
-                            count++;
-                        }
-                        
-                        if (IsDiagonalUp(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                        if (IsDiagonalUpReverse(charMatrix, i, j))
-                        {
-                            count++;
-                        }
-                        
-                    }
-                    
-                }
-            }
-            Console.WriteLine(count);
-        }
 
-        public static bool IsHorizontal(List<List<char>> charMatrix, int row, int col)
-        {
-            if (col+1 > (charMatrix[0].Count - 4))
+            string lineStr;
+            List<string> records = new List<string>();
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row][col + 1] == 'M' && charMatrix[row][col + 2] == 'A' && charMatrix[row][col + 3] == 'S')
+                while ((lineStr = reader.ReadLine()) != null)
                 {
-                    return true;
+                    records.Add(lineStr);
                 }
             }
-            return false;
+
+            Console.WriteLine($"{SolvePartA(records.ToArray())}");
+
+
+
         }
         
-        public static bool IsHorizontalReverse(List<List<char>> charMatrix, int row, int col)
+        public static string SolvePartA(string[] input)
         {
-            if (col+1 < 4)
+            var rows = input.Length;
+            var columns = input[0].Length;
+
+            var sum = 0;
+            for (var i = 0; i < rows; i++)
             {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row][col - 1] == 'M' && charMatrix[row][col - 2] == 'A' && charMatrix[row][col - 3] == 'S')
+                for (var j = 0; j < columns; j++)
                 {
-                    return true;
+                    sum += CountAllFromPoint(i, j);
                 }
             }
-            return false;
+
+            return sum.ToString();
+
+            int CountAllFromPoint(int i, int j)
+            {
+                if (input[i][j] != 'X') return 0;
+
+                var count = 0;
+        
+                // up
+                if (i - 3 >= 0 && input[i - 1][j] == 'M' && input[i - 2][j] == 'A' && input[i - 3][j] == 'S')
+                    count++;
+        
+                // down
+                if (i + 3 < rows && input[i + 1][j] == 'M' && input[i + 2][j] == 'A' && input[i + 3][j] == 'S')
+                    count++;
+        
+                // left
+                if (j - 3 >= 0 && input[i][j - 1] == 'M' && input[i][j - 2] == 'A' && input[i][j - 3] == 'S')
+                    count++;
+        
+                // right
+                if (j + 3 < columns && input[i][j + 1] == 'M' && input[i][j + 2] == 'A' && input[i][j + 3] == 'S')
+                    count++;
+        
+                // up-left
+                if (i - 3 >= 0 && j - 3 >= 0 && input[i - 1][j - 1] == 'M' && input[i - 2][j - 2] == 'A' && input[i - 3][j - 3] == 'S')
+                    count++;
+        
+                // up-right
+                if (i - 3 >= 0 && j + 3 < columns && input[i - 1][j + 1] == 'M' && input[i - 2][j + 2] == 'A' && input[i - 3][j + 3] == 'S')
+                    count++;
+        
+                // down-left
+                if (i + 3 < rows && j - 3 >= 0 && input[i + 1][j - 1] == 'M' && input[i + 2][j - 2] == 'A' && input[i + 3][j - 3] == 'S')
+                    count++;
+        
+                // down-right
+                if (i + 3 < rows && j + 3 < columns && input[i + 1][j + 1] == 'M' && input[i + 2][j + 2] == 'A' && input[i + 3][j + 3] == 'S')
+                    count++;
+        
+                return count;
+            }
         }
         
-        public static bool IsVertical(List<List<char>> charMatrix, int row, int col)
-        {
-            if (row+1 > (charMatrix.Count - 4))
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row + 1][col] == 'M' && charMatrix[row + 2][col] == 'A' && charMatrix[row + 3][col] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        public static bool IsVerticalReverse(List<List<char>> charMatrix, int row, int col)
-        {
-            if (row+1 < 4)
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row - 1][col] == 'M' && charMatrix[row - 2][col] == 'A' && charMatrix[row - 3][col] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        
-        public static bool IsDiagonalDown(List<List<char>> charMatrix, int row, int col)
-        {
-            if ((row+1 > (charMatrix.Count - 4)) || (col+1 > (charMatrix[0].Count - 4)))
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row + 1][col + 1] == 'M' && charMatrix[row + 2][col + 2] == 'A' && charMatrix[row + 3][col + 3] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        public static bool IsDiagonalDownReverse(List<List<char>> charMatrix, int row, int col)
-        {
-            if ((row+1 < 4) || (col+1 < 4))
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row - 1][col - 1] == 'M' && charMatrix[row - 2][col - 2] == 'A' && charMatrix[row - 3][col - 3] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        
-        public static bool IsDiagonalUp(List<List<char>> charMatrix, int row, int col)
-        {
-            if ((row+1 < 4) || (col+1 > (charMatrix[0].Count - 4)))
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row - 1][col + 1] == 'M' && charMatrix[row - 2][col + 2] == 'A' && charMatrix[row - 3][col + 3] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        public static bool IsDiagonalUpReverse(List<List<char>> charMatrix, int row, int col)
-        {
-            if ((row+1 > (charMatrix.Count - 4)) || (col+1 < 4))
-            {
-                return false;
-            }
-            else
-            {
-                if (charMatrix[row + 1][col - 1] == 'M' && charMatrix[row + 2][col - 2] == 'A' && charMatrix[row + 3][col - 3] == 'S')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
 //2584 is too low!
